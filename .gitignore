@@ -1,0 +1,5 @@
+## BUILD ARTIFACTS
+node_modules/*
+
+## CREDS
+.env
