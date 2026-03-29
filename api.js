@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config(); // loads .env into process.env
 
-export { getToken, searchSpotify, getById };
+  
 
 // TODO: get access token from Spotify using client credentials flow
 // POST https://accounts.spotify.com/api/token
@@ -62,7 +62,7 @@ const getById = async (id, type) => {
     try {
     const token = await getToken();
     const response = await axios.get(
-      `https://api.spotify.com/v1/artists/${id}`,
+      `https://api.spotify.com/v1/${type}s/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
