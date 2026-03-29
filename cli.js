@@ -43,7 +43,6 @@ yargs(hideBin(process.argv))
               });
       },
     (args) => {
-        // call history from history.js
         if (args.action === "keywords") {
             listKeywords();
         } else if (args.action === "re-search") {
@@ -53,5 +52,4 @@ yargs(hideBin(process.argv))
       }
     },
   )
-  // `node cli.js --help`
   .help().argv;

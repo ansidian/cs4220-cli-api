@@ -1,15 +1,12 @@
-import inquirer  from "inquirer"; // for user cli ui
-import { searchSpotify, getById } from "./api.js"; // Darshans api call gets imported here
+import inquirer from "inquirer";
+import { searchSpotify, getById } from "./api.js";
 import { saveKeyword } from "./history.js";
 
 export const search = async (keyword, type) => {
-
-  //calling api search function from api.js
   const results = await searchSpotify(keyword, type);
 
   const items = results[`${type}s`].items;
 
-  // save keyword to search history
   await saveKeyword(keyword, type);
 
   const options = items.map((item) => ({
@@ -19,7 +16,6 @@ export const search = async (keyword, type) => {
     value: item.id,
   }))
 
-  // list options for users to select
   const choice = await inquirer.prompt([{
     type : "select",
     name : "selected",
@@ -30,7 +26,6 @@ export const search = async (keyword, type) => {
 
   const details = await getById(choice.selected, type);
 
-  // display selection data
   if (type === "track") {
     console.log(`\nTrack: ${details.name}`);
     console.log(`Artist: ${details.artists[0].name}`);

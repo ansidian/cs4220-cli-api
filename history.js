@@ -6,7 +6,7 @@ const HISTORY_FILE = "./search_history.json";
 
 export { listKeywords, saveKeyword, reSearch };
 
-// reads from search_history.json
+// read and parse search_history.json
 const readHistory = async () => {
     if (!existsSync(HISTORY_FILE)) return [];
     try {
@@ -22,8 +22,7 @@ const writeHistory = async (history) => {
     await writeFile(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
 };
 
-// ─── Exported Functions
-
+// save keyword/type pair to history, skips duplicates
 const saveKeyword = async (keyword, type = "artist") => {
     const history = await readHistory();
 
@@ -43,16 +42,14 @@ const saveKeyword = async (keyword, type = "artist") => {
     }
 };
 
+// print all past search keywords
 const listKeywords = async () => {
-
-    // Reads search_history.json and prints all past keywords to the console.
     const history = await readHistory();
 
     if (history.length === 0) {
         console.log("No search history yet. Run a search first.\n");
         return;
     }
-    // Groups entries by type and shows the timestamp of each search.
     console.log(`\nSearch History  (${history.length} unique searches)\n`);
     console.log("  #   Keyword                          Type       Searched At");
     console.log("  ─── ──────────────────────────────── ────────── ──────────────────────");
@@ -66,8 +63,9 @@ const listKeywords = async () => {
     });
 };
 
+// re-run a past search by index
+// example: reSearch(1) re-runs the first saved search
 const reSearch = async (index) => {
-    // Re-runs a past search by its 1-based index from the history list.
     const history = await readHistory();
 
     if (history.length === 0) {
