@@ -1,10 +1,11 @@
 import { readFile, writeFile } from "fs/promises";
 import { existsSync } from "fs";
+import inquirer from "inquirer";
 import { search } from "./app.js";
 
 const HISTORY_FILE = "./search_history.json";
 
-export { listKeywords, saveKeyword, reSearch };
+export { listKeywords, saveKeyword };
 
 // read and parse search_history.json
 const readHistory = async () => {
@@ -42,7 +43,7 @@ const saveKeyword = async (keyword, type = "artist") => {
     }
 };
 
-// print all past search keywords
+// show list prompt of past keywords, re-run search on selection
 const listKeywords = async () => {
     const history = await readHistory();
 
@@ -50,40 +51,23 @@ const listKeywords = async () => {
         console.log("No search history yet. Run a search first.\n");
         return;
     }
-    console.log(`\nSearch History  (${history.length} unique searches)\n`);
-    console.log("  #   Keyword                          Type       Searched At");
-    console.log("  ─── ──────────────────────────────── ────────── ──────────────────────");
 
-    history.forEach((entry, i) => {
-        const index   = String(i + 1).padEnd(3);
-        const keyword = entry.keyword.padEnd(36);
-        const type    = entry.type.padEnd(10);
-        const date    = new Date(entry.searchedAt).toLocaleString();
-        console.log(`  ${index} ${keyword} ${type} ${date}`);
-    });
-};
+    const choices = [
+        { name: "Exit", value: null },
+        ...history.map((entry) => ({
+            name: `${entry.keyword} (${entry.type})`,
+            value: entry,
+        })),
+    ];
 
-// re-run a past search by index
-// example: reSearch(1) re-runs the first saved search
-const reSearch = async (index) => {
-    const history = await readHistory();
+    const { selected } = await inquirer.prompt([{
+        type: "select",
+        name: "selected",
+        message: "Select a keyword to re-search",
+        choices,
+    }]);
 
-    if (history.length === 0) {
-        console.log("No search history yet. Nothing to re-search.\n");
-        return;
-    }
+    if (!selected) return;
 
-    const i = parseInt(index, 10);
-
-    if (isNaN(i) || i < 1 || i > history.length) {
-        console.error(
-            `Invalid index "${index}". Choose a number between 1 and ${history.length}.\n`,
-        );
-        return;
-    }
-
-    const { keyword, type } = history[i - 1];
-
-    console.log(`\nRe-searching: "${keyword}" (${type})\n`);
-    await search(keyword, type);
+    await search(selected.keyword, selected.type);
 };
