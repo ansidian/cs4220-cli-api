@@ -38,8 +38,8 @@ export const search = async (keyword, type) => {
     console.log(`Release Date: ${details.album.release_date}\n`);
   } else if (type === "artist") {
     console.log(`\nArtist: ${details.name}`);
-    console.log(`Genres: ${details.genres.join(", ")}`);
-    console.log(`Followers: ${details.followers.total}\n`);
+    console.log(`Genres: ${details.genres?.join(", ") || "N/A"}`);
+    console.log(`Followers: ${details.followers?.total ?? "N/A"}\n`);
   } else if (type === "album") {
     console.log(`\nAlbum: ${details.name}`);
     console.log(`Artist: ${details.artists[0].name}`);
