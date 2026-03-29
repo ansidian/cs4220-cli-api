@@ -1,13 +1,9 @@
 import axios from "axios";
 import dotenv from "dotenv";
 
-dotenv.config(); // loads .env into process.env
+dotenv.config();
 
-export { getToken, searchSpotify, getById };
-
-// TODO: get access token from Spotify using client credentials flow
-// POST https://accounts.spotify.com/api/token
-// Use CLIENT_ID and CLIENT_SECRET from .env
+// get access token using client credentials flow
 const getToken = async () => {
     try {
     const response = await axios.post(
@@ -30,9 +26,7 @@ const getToken = async () => {
     }
 };
 
-// TODO: search Spotify by keyword and type (artist, track, album)
-// GET https://api.spotify.com/v1/search
-// Requires Bearer token in Authorization header
+// search by keyword and type (artist, track, album)
 const searchSpotify = async (keyword, type) => {
 try {
     const token = await getToken();
@@ -56,13 +50,13 @@ try {
   }
 };
 
-// TODO: get detailed data for a single item by its Spotify ID
-// e.g. GET https://api.spotify.com/v1/artists/{id}
+// get details for a single item by spotify id
+// example: getById('3TVXtAsR1Inumwj472S9r4', 'artist')
 const getById = async (id, type) => {
     try {
     const token = await getToken();
     const response = await axios.get(
-      `https://api.spotify.com/v1/artists/${id}`,
+      `https://api.spotify.com/v1/${type}s/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

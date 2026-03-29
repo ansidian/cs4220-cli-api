@@ -2,6 +2,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { search } from "./app.js";
+import { listKeywords } from "./history.js";
 
 yargs(hideBin(process.argv))
   .command(
@@ -30,20 +31,19 @@ yargs(hideBin(process.argv))
     // example: `node cli.js history keywords`
     "history <action>",
     "look at previous search history",
-    (yargs) => {
-      yargs.positional("action", {
-        describe: "type of history to view",
-        type: "string",
-      });
-    },
+      (yargs) => {
+          yargs
+              .positional("action", {
+                  describe: "type of history to view",
+                  type: "string",
+              });
+      },
     (args) => {
-      if (args.action === "keywords") {
-        // TODO: call history from history.js
-        // pending history.js completion
-      } else {
-        console.log(`Invalid action: ${args.action}`);
+        if (args.action === "keywords") {
+            listKeywords();
+        } else {
+            console.log(`Invalid action: ${args.action}`);
       }
     },
   )
-  // `node cli.js --help`
   .help().argv;
