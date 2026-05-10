@@ -1,8 +1,7 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { search } from "./app.js";
-import { listKeywords } from "./history.js";
+import { listKeywords, search } from "./app.js";
 
 yargs(hideBin(process.argv))
   .command(

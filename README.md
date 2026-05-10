@@ -14,9 +14,9 @@ A Node.js Command Line Interface application that interacts with the [Spotify We
 | File | Purpose |
 |-|-|
 | `cli.js` | CLI entry point — parses commands and arguments |
-| `app.js` | Search functionality — API search, history save, display results |
+| `app.js` | Application flow — prompts, search flow, history selection, display results |
 | `api.js` | API module — handles HTTP requests to Spotify Web API |
-| `history.js` | History functionality — browse and re-search past keywords |
+| `history.js` | History data module — reads and writes search history |
 | `search_history.json` | Stores unique search keywords |
 | `package.json` | Project metadata and dependencies |
 

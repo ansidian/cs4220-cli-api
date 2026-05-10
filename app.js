@@ -1,13 +1,52 @@
 import inquirer from "inquirer";
 import { searchSpotify, getById } from "./api.js";
-import { saveKeyword } from "./history.js";
+import { readHistory, saveKeyword } from "./history.js";
+
+export const listKeywords = async () => {
+  let history;
+
+  try {
+    history = await readHistory();
+  } catch (error) {
+    console.error(error.message);
+    return;
+  }
+
+  if (history.length === 0) {
+    console.log("No search history yet. Run a search first.\n");
+    return;
+  }
+
+  const choices = [
+    { name: "Exit", value: null },
+    ...history.map((entry) => ({
+      name: `${entry.keyword} (${entry.type})`,
+      value: entry,
+    })),
+  ];
+
+  const { selected } = await inquirer.prompt([{
+    type: "select",
+    name: "selected",
+    message: "Select a keyword to re-search",
+    choices,
+  }]);
+
+  if (!selected) return;
+
+  await search(selected.keyword, selected.type);
+};
 
 export const search = async (keyword, type) => {
   const results = await searchSpotify(keyword, type);
 
   const items = results[`${type}s`].items;
 
-  await saveKeyword(keyword, type);
+  try {
+    await saveKeyword(keyword, type);
+  } catch (error) {
+    console.error(error.message);
+  }
 
   const options = items.map((item) => ({
     name: type === "track"

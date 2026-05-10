@@ -1,26 +1,30 @@
 import { readFile, writeFile } from "fs/promises";
-import { existsSync } from "fs";
-import inquirer from "inquirer";
-import { search } from "./app.js";
 
-const HISTORY_FILE = "./search_history.json";
+const HISTORY_FILE = new URL("./search_history.json", import.meta.url);
 
-export { listKeywords, saveKeyword };
+export { readHistory, saveKeyword };
 
 // read and parse search_history.json
 const readHistory = async () => {
-    if (!existsSync(HISTORY_FILE)) return [];
     try {
         const raw = await readFile(HISTORY_FILE, "utf-8");
-        return JSON.parse(raw);
-    } catch {
-        console.error("Could not read search_history.json, starting from scratch");
-        return [];
+        const history = JSON.parse(raw);
+        return Array.isArray(history) ? history : [];
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            return [];
+        }
+
+        throw new Error("Could not read search_history.json", { cause: error });
     }
 };
 
 const writeHistory = async (history) => {
-    await writeFile(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+    try {
+        await writeFile(HISTORY_FILE, JSON.stringify(history, null, 2), "utf-8");
+    } catch (error) {
+        throw new Error("Could not write search_history.json", { cause: error });
+    }
 };
 
 // save keyword/type pair to history, skips duplicates
@@ -33,41 +37,19 @@ const saveKeyword = async (keyword, type = "artist") => {
             entry.type === type,
     );
 
-    if (!alreadySaved) {
-        history.push({
+    if (alreadySaved) {
+        return history;
+    }
+
+    const updatedHistory = [
+        ...history,
+        {
             keyword,
             type,
             searchedAt: new Date().toISOString(),
-        });
-        await writeHistory(history);
-    }
-};
-
-// show list prompt of past keywords, re-run search on selection
-const listKeywords = async () => {
-    const history = await readHistory();
-
-    if (history.length === 0) {
-        console.log("No search history yet. Run a search first.\n");
-        return;
-    }
-
-    const choices = [
-        { name: "Exit", value: null },
-        ...history.map((entry) => ({
-            name: `${entry.keyword} (${entry.type})`,
-            value: entry,
-        })),
+        },
     ];
 
-    const { selected } = await inquirer.prompt([{
-        type: "select",
-        name: "selected",
-        message: "Select a keyword to re-search",
-        choices,
-    }]);
-
-    if (!selected) return;
-
-    await search(selected.keyword, selected.type);
+    await writeHistory(updatedHistory);
+    return updatedHistory;
 };
