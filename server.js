@@ -5,7 +5,7 @@ import historyRoutes from "./routes/history.js";
 import spotifyRoutes from "./routes/spotify.js";
 import db from "./services/db.js";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,11 +34,6 @@ const start = async () => {
 
   if (missing.length > 0) {
     console.error(`Missing required environment variables: ${missing.join(", ")}`);
-    process.exit(1);
-  }
-
-  if (process.env.DB_USER !== "spotify") {
-    console.error("DB_USER must be spotify");
     process.exit(1);
   }
 

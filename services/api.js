@@ -1,68 +1,63 @@
 import axios from "axios";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
-// get access token using client credentials flow
+const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com/api/token";
+const SPOTIFY_API_URL = "https://api.spotify.com/v1";
+
 const getToken = async () => {
-    try {
+  try {
     const response = await axios.post(
-        "https://accounts.spotify.com/api/token",
-        new URLSearchParams({
-            grant_type: "client_credentials",
-            client_id: process.env.CLIENT_ID,
-            client_secret: process.env.CLIENT_SECRET,
-        }),
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            },
-        }
-        );
-        return response.data.access_token;
-    } catch (error) {
-        console.error("Error fetching Spotify access token:", error.message);
-        throw error;
-    }
-};
-
-// search by keyword and type (artist, track, album)
-const searchSpotify = async (keyword, type) => {
-try {
-    const token = await getToken();
-    const response = await axios.get(
-      "https://api.spotify.com/v1/search",
+      SPOTIFY_ACCOUNTS_URL,
+      new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+      }),
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        params: {
-          q: keyword,
-          type: type,
-        },
-      }
+      },
     );
-    
-    return response.data; 
+
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Error fetching Spotify access token:", error.message);
+    throw error;
+  }
+};
+
+const searchSpotify = async (keyword, type) => {
+  try {
+    const token = await getToken();
+    const response = await axios.get(`${SPOTIFY_API_URL}/search`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        q: keyword,
+        type,
+      },
+    });
+
+    return response.data;
   } catch (error) {
     console.error(`Error searching Spotify for "${keyword}":`, error.message);
     throw error;
   }
 };
 
-// get details for a single item by spotify id
-// example: getById('3TVXtAsR1Inumwj472S9r4', 'artist')
 const getById = async (id, type) => {
-    try {
+  try {
     const token = await getToken();
-    const response = await axios.get(
-      `https://api.spotify.com/v1/${type}s/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get(`${SPOTIFY_API_URL}/${type}s/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error(`Error fetching details for ID "${id}":`, error.message);

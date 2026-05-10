@@ -14,6 +14,7 @@ A Node.js Express server application that interacts with the [Spotify Web API](h
 | File | Purpose |
 |-|-|
 | `server.js` | Express server entry point |
+| `cli.js` | Shortcut command client that calls the Express API |
 | `routes/spotify.js` | Spotify search and detail endpoints |
 | `routes/history.js` | Search keyword history endpoint |
 | `services/api.js` | Spotify API service module |
@@ -46,17 +47,12 @@ Calling `/spotify/:id` also stores the selected Spotify item in the `SelectionHi
 
 ## Setup
 
-```bash
-npm install
-npm start
-```
-
 Create a `.env` file with:
 
 ```bash
 CLIENT_ID=
 CLIENT_SECRET=
-DB_USER=spotify
+DB_USER=
 DB_PASSWORD=
 DB_HOST=
 DB_NAME=
@@ -82,46 +78,35 @@ The server runs at:
 localhost:3000
 ```
 
-Check that the server is running:
+Use the shortcut commands from a second terminal while the server is running.
+These commands call the Express API, so they use the same MongoDB-backed search
+and history behavior as the HTTP endpoints.
+
+Search by type:
 
 ```bash
-curl "localhost:3000/"
+npm run artist -- "drake"
+npm run track -- "best i ever had"
+npm run album -- "take care"
 ```
 
-Search Spotify by keyword. The default type is `artist`:
+Search with an explicit type:
 
 ```bash
-curl "localhost:3000/spotify?keyword=drake"
+npm run search -- -t track "best i ever had"
 ```
 
-Search Spotify by keyword and type:
+The search commands show an interactive result picker. Selecting a result calls
+the Express detail endpoint and saves the selected item in MongoDB.
+
+The `history` command calls the Express history endpoint and prints saved search
+keywords:
 
 ```bash
-curl "localhost:3000/spotify?keyword=drake&type=artist"
-curl "localhost:3000/spotify?keyword=best%20i%20ever%20had&type=track"
-curl "localhost:3000/spotify?keyword=take%20care&type=album"
+npm run history
 ```
 
-Get detailed data by Spotify identifier:
-
-```bash
-curl "localhost:3000/spotify/3TVXtAsR1Inumwj472S9r4?type=artist"
-```
-
-Get saved search keyword history:
-
-```bash
-curl "localhost:3000/history?type=keywords"
-```
-
-Validation examples:
-
-```bash
-curl "localhost:3000/spotify"
-curl "localhost:3000/spotify?keyword=drake&type=playlist"
-curl "localhost:3000/history"
-curl "localhost:3000/history?type=selections"
-```
+For direct API testing, use the endpoint list above in a browser or API client.
 
 Optional MongoDB verification:
 

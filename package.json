@@ -21,6 +21,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "search": "node cli.js search",
+    "artist": "node cli.js search --type artist",
+    "track": "node cli.js search --type track",
+    "album": "node cli.js search --type album",
+    "history": "node cli.js history",
     "cli": "node cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
