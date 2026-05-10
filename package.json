@@ -1,7 +1,7 @@
 {
-  "name": "cs4220-cli-api",
+  "name": "spotify-cs4220-server-api",
   "version": "1.0.0",
-  "description": "A Node.js CLI application that interacts with Spotify Web API to search for music and retrieve detailed track/artist/album information.",
+  "description": "A Node.js Express server that interacts with the Spotify Web API and stores search keyword history in MongoDB Atlas.",
   "homepage": "https://github.com/ansidian/cs4220-cli-api#readme",
   "bugs": {
     "url": "https://github.com/ansidian/cs4220-cli-api/issues"
@@ -18,14 +18,18 @@
     "Darshan Patel"
   ],
   "type": "module",
-  "main": "cli.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "cli": "node cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "axios": "^1.13.6",
     "dotenv": "^17.3.1",
+    "express": "^4.22.1",
     "inquirer": "^13.3.2",
+    "mongodb": "^6.21.0",
     "yargs": "^18.0.0"
   }
 }
